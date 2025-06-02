@@ -1,4 +1,4 @@
-NORE:SEE THE CODE IN THIS README FILE RATHER THEN THE PREVIEW FOR UNDERSTANDING  
+NOTE:SEE THE CODE IN THIS README FILE RATHER THEN THE PREVIEW FOR UNDERSTANDING  
 First run the model in the colab or jupiter then save the model and also jason file download that files(.h5) and keep in the model folder as i done 
  it should follow the below structure 
 
