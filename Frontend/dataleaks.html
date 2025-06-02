@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Leaks Search - HackItAlone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;500;400&family=Poppins:wght@700;400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f1f1fc 0%, #e5e5ff 100%);
+      --card-radius: 24px;
+      --shadow: 0 8px 32px 0 rgba(44, 44, 80, 0.16);
+      --icon-bg: #6c63ff;
+      --font-title: 'Poppins', 'Inter', 'Segoe UI', Arial, sans-serif;
+      --font-body: 'Inter', 'Poppins', 'Segoe UI', Arial, sans-serif;
+      --input-bg: #f7f7fd;
+      --input-border: #e2e1fb;
+      --button-gradient: linear-gradient(90deg, #7b2ff7 0%, #f107a3 100%);
+      --button-gradient-hover: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: var(--font-body);
+      background: var(--bg-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .scanner-card {
+      background: #fff;
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      padding: 2.5rem 1.5rem 2rem 1.5rem;
+      width: 100%;
+      max-width: 370px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.8s cubic-bezier(.4,0,.2,1);
+    }
+    .icon-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--icon-bg);
+      border-radius: 50%;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1.3rem;
+      box-shadow: 0 6px 18px 0 rgba(108,99,255,0.18);
+    }
+    .icon-circle span {
+      font-size: 2rem;
+      color: #fff;
+      filter: drop-shadow(0 2px 2px rgba(42,42,90,.08));
+    }
+    .title {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #332583;
+      margin-bottom: .7rem;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #575370;
+      font-size: 1.05rem;
+      font-weight: 400;
+      line-height: 1.5;
+      margin-bottom: 1.8rem;
+      max-width: 96%;
+    }
+    .url-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .url-input {
+      width: 91%;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--input-border);
+      background: var(--input-bg);
+      box-shadow: inset 0 1.5px 6px 0 rgba(108,99,255,0.03);
+      font-size: 1rem;
+      font-family: inherit;
+      color: #281e5d;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .url-input:focus {
+      border: 1.5px solid #6c63ff;
+      background: #f3f2fe;
+    }
+    .scan-btn {
+      width: 100%;
+      background: var(--button-gradient);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 14px;
+      padding: 0.99rem 0;
+      font-size: 1.05rem;
+      font-family: var(--font-title);
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: background 0.22s, box-shadow 0.14s;
+      box-shadow: 0 2px 8px 0 rgba(123,47,247,0.09);
+    }
+    .scan-btn:hover,.scan-btn:focus {
+      background: var(--button-gradient-hover);
+      box-shadow: 0 2px 18px 0 rgba(123,47,247,0.14);
+    }
+    /* Result section style */
+    .result-section {
+      margin-top: 1.2em;
+      width: 100%;
+      text-align: center;
+      padding: 1em 0.4em;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(90deg,#e0eeff 0%,#f9eaff 100%);
+      color: #332583;
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+      transition: all 0.6s cubic-bezier(.7,1.35,.42,.88);
+    }
+    .result-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    @media (max-width: 600px) {
+      .scanner-card {
+        max-width: 97vw;
+        min-height: 63vh;
+        padding: 1.5rem 0.5rem 2rem 0.5rem;
+      }
+      .url-input, .scan-btn {
+        font-size: 1rem;
+        padding: 0.88rem 0.8rem;
+        border-radius: 12px;
+      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <main class="scanner-card">
+    <div class="icon-circle"><span>🛡️</span></div>
+    <div class="title">Data Leak Search</div>
+    <div class="subtitle">
+      Instantly check any of you mail is used in malicious websites
+    </div>
+    <form class="url-form" id="urlScanForm" autocomplete="off">
+  <input 
+    class="url-input"
+    type="email" 
+    name="email"
+    id="urlField"
+    required 
+    placeholder="someone@gmail.com"
+  />
+  <button class="scan-btn" type="submit">Scan</button>
+</form>
+<div class="result-section" id="resultSection"></div>
+
+<script>
+const form = document.getElementById('urlScanForm');
+const resultSection = document.getElementById('resultSection');
+
+form.onsubmit = async function(e) {
+  e.preventDefault();
+  // Show styled "Checking..." state
+  resultSection.textContent = "🔍 Checking...";
+  resultSection.className = "result-section visible";
+  resultSection.style.background = "linear-gradient(90deg,#e0eeff 0%,#f9eaff 100%)";
+  resultSection.style.color = "#332583";
+
+  // Force browser to render the "Checking..." message
+  await new Promise(requestAnimationFrame);
+
+  const email = document.getElementById('urlField').value;
+
+  try {
+    // The frontend makes a POST request to your Flask API endpoint
+    const resp = await fetch('/api/check-email-leak', { // <-- Changed to /api/check-email-leak
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email})
+    });
+
+    const result = await resp.json(); // This is where the error likely occurred before
+
+    if (result.breached === true) {
+      // Leak found
+      resultSection.innerHTML = "⚠️ <b style='color:#e63a57;'>Data leak found for this email!</b><br><span style='font-weight:400;color:#a8324a;'>Change your password immediately.</span>";
+      resultSection.style.background = "linear-gradient(90deg,#ffe6e6 0%,#ffd2df 100%)";
+      resultSection.style.color = "#e63a57";
+    } else if (result.breached === false) {
+      // No leak
+      resultSection.innerHTML = "✅ <b style='color:#277c51;'>No leaks found for this email.</b><br><span style='font-weight:400;color:#277c51;'>You’re safe!</span>";
+      resultSection.style.background = "linear-gradient(90deg,#e0ffec 0%,#d9f0ff 100%)";
+      resultSection.style.color = "#277c51";
+    } else {
+      resultSection.textContent = "Error: " + (result.error || "Unknown error");
+      resultSection.style.background = "linear-gradient(90deg,#fff5f5 0%,#ffe8e8 100%)";
+      resultSection.style.color = "#c0392b";
+    }
+  } catch (err) {
+    console.error("Frontend fetch error:", err); // Log the full error to console
+    resultSection.textContent = "Request failed: " + err.message + ". Check console for more details.";
+    resultSection.style.background = "linear-gradient(90deg,#fff5f5 0%,#ffe8e8 100%)";
+    resultSection.style.color = "#c0392b";
+  }
+};
+</script>
+
+</body>
+</html>
